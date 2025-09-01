@@ -40,7 +40,7 @@ extension HomeView{
         VStack{
             HStack{
                 CircleButtonView(
-                    iconName:  showPortfolio ? "info" : "plus"
+                    iconName:  showPortfolio ? "info" : "person"
                 )
                 .transaction { transaction in
                     transaction.animation = nil
