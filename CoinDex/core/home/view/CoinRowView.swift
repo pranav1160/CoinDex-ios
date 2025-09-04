@@ -9,15 +9,15 @@ import SwiftUI
 
 struct CoinRowView: View {
     let coin: Coin
-
+    @State var showPortFolio:Bool
     var body: some View {
         HStack(spacing: 12) {
             leftColumn
             
             Spacer()
-            
-            centreColumn
-            
+            if showPortFolio{
+                centreColumn
+            }
             Spacer()
             
             // Price + Change
@@ -31,7 +31,7 @@ struct CoinRowView: View {
 
 struct CoinRowView_Previews:PreviewProvider{
     static var previews: some View{
-        CoinRowView(coin: dev.coin)
+        CoinRowView(coin: dev.coin,showPortFolio:true)
     }
 }
 
