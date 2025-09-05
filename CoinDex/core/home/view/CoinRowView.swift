@@ -47,7 +47,7 @@ extension CoinRowView{
                 .frame(minWidth: 30)
             
             // Placeholder for logo
-            Circle()
+            ImageView(coin: coin)
                 .frame(width: 30, height: 30)
                 .padding(.trailing,5)
             

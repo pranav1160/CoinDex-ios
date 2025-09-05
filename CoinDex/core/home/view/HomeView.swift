@@ -79,6 +79,7 @@ extension HomeView{
                     ForEach(homeVm.allCoins){coin in
                         CoinRowView(coin: coin,showPortFolio: true)
                             .listRowInsets(EdgeInsets())
+                            .padding(.vertical,10)
                     }
                 }
                 .listStyle(.plain)
@@ -91,7 +92,7 @@ extension HomeView{
                     ForEach(homeVm.allCoins){coin in
                         CoinRowView(coin: coin,showPortFolio: false)
                             .listRowInsets(EdgeInsets())
-                            .padding(.vertical,6)
+                            .padding(.vertical,10)
                     }
                 }
                 .listStyle(.plain)
