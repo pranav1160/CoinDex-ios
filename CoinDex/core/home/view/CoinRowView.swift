@@ -9,22 +9,22 @@ import SwiftUI
 
 struct CoinRowView: View {
     let coin: Coin
-    @State var showPortFolio:Bool
+    @State var showPortFolio: Bool
+    
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 1) {
             leftColumn
+                .frame(maxWidth: .infinity, alignment: .leading)
             
-            Spacer()
-            if showPortFolio{
+            if showPortFolio {
                 centreColumn
+                    .frame(maxWidth: .infinity, alignment: .center)
             }
-            Spacer()
             
-            // Price + Change
             rightColumn
-       
+                .frame(maxWidth: .infinity, alignment: .trailing)
         }
-        .padding(.vertical, 6)
+        
     }
 }
 
@@ -49,6 +49,7 @@ extension CoinRowView{
             // Placeholder for logo
             Circle()
                 .frame(width: 30, height: 30)
+                .padding(.trailing,5)
             
             // Symbol
             Text(coin.symbol.uppercased())
@@ -74,6 +75,7 @@ extension CoinRowView{
     }
     
     private var rightColumn:some View{
+        
         VStack(alignment: .trailing, spacing: 2) {
             Text(coin.currentPrice.asCurrencyWith2to6Decimals())
                 .bold()
@@ -86,5 +88,6 @@ extension CoinRowView{
                     : Color.theme.appRed
                 )
         }
+        
     }
 }
