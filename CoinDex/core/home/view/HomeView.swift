@@ -20,6 +20,8 @@ struct HomeView:View {
                 
                 header
                 
+                HomeStatsView(showPortfolio: $showPortfolio)
+                
                 SearchBarView(searchText: $homeVm.searchTxt)
                 
                 Spacer(minLength: 0)
