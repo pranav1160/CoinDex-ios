@@ -88,6 +88,7 @@ extension CoinRowView{
                     : Color.theme.appRed
                 )
         }
+        .padding(.trailing,3)
         
     }
 }

@@ -20,6 +20,8 @@ struct HomeView:View {
                 
                 header
                 
+                SearchBarView(searchText: $homeVm.searchTxt)
+                
                 Spacer(minLength: 0)
                 
                 homeColumns
