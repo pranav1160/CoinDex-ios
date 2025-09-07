@@ -12,9 +12,15 @@ struct HomeView:View {
     
     @State private var showPortfolio = false
     @EnvironmentObject private var homeVm:HomeViewModel
+    @State private var navigateToPorfolio = false
+    
     var body: some View {
         ZStack {
             Color.theme.backGround.ignoresSafeArea()
+                .sheet(isPresented: $navigateToPorfolio) {
+                    PortfolioView()
+                        .environmentObject(homeVm)
+                }
             
             VStack{
                 
@@ -46,10 +52,15 @@ extension HomeView{
         VStack{
             HStack{
                 CircleButtonView(
-                    iconName:  showPortfolio ? "info" : "person"
+                    iconName:  showPortfolio ? "plus" : "info"
                 )
                 .transaction { transaction in
                     transaction.animation = nil
+                }
+                .onTapGesture {
+                    if showPortfolio{
+                        navigateToPorfolio = true
+                    }
                 }
                 
                 Spacer()
@@ -94,9 +105,10 @@ extension HomeView{
             if !showPortfolio{
                 List{
                     ForEach(homeVm.allCoins){coin in
-                        CoinRowView(coin: coin,showPortFolio: false)
-                            .listRowInsets(EdgeInsets())
-                            .padding(.vertical,10)
+                        
+                            CoinRowView(coin: coin,showPortFolio: false)
+                                .listRowInsets(EdgeInsets())
+                                .padding(.vertical,10)
                     }
                 }
                 .listStyle(.plain)
