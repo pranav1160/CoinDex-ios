@@ -33,7 +33,6 @@ struct StatisticView: View {
             .foregroundStyle(
                 stat.percentageChange ?? 0 >= 0 ? Color.theme.appGreen : Color.theme.appRed
             )
-            
         }
     }
 }

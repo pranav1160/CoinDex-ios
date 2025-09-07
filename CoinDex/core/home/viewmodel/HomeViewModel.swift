@@ -11,15 +11,22 @@ import Combine
 class HomeViewModel:ObservableObject{
     @Published var allCoins:[Coin] = []
     @Published var portfolioCoins:[Coin] = []
+    
     @Published var searchTxt:String = ""
     @Published var statistics:[Statistic] = []
     
     private let dataService = CoinDataService()
     private let statService = MarketDataService()
+    private let portfolioService = PortfolioDataService()
+    
     private var cancellables = Set<AnyCancellable>()
     
     init (){
         addSubscriber()
+    }
+    
+    func saveToPortfolio(coin:Coin,amount:Double){
+        portfolioService.update(coin: coin, amount: amount)
     }
     
     private func addSubscriber(){
@@ -38,6 +45,22 @@ class HomeViewModel:ObservableObject{
                 self?.statistics = stats
             }
             .store(in: &cancellables)
+        
+        $allCoins
+            .combineLatest(portfolioService.$savedPortfolios)
+            .map { allCoins,portfolios->[Coin] in
+                allCoins.compactMap { coin in
+                    guard let entity = portfolios.first(where: {$0.id == coin.id}) else {
+                        return nil
+                    }
+                    return coin.updateHoldings(amount: entity.amount)
+                }
+            }
+            .sink {[weak self] coins in
+                self?.portfolioCoins = coins
+            }
+            .store(in: &cancellables)
+            
     }
     
     private func convertToStatistics(marketData:MarketDataModel?)->[Statistic]{

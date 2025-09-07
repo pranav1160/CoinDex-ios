@@ -91,7 +91,7 @@ extension HomeView{
         VStack{
             if showPortfolio{
                 List{
-                    ForEach(homeVm.allCoins){coin in
+                    ForEach(homeVm.portfolioCoins){coin in
                         CoinRowView(coin: coin,showPortFolio: true)
                             .listRowInsets(EdgeInsets())
                             .padding(.vertical,10)

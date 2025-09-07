@@ -13,7 +13,6 @@ struct PortfolioView: View {
     @State private var amountSelected = ""
     
     var body: some View {
-        
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
@@ -35,6 +34,8 @@ struct PortfolioView: View {
             .overlay(  // Wide Save Button
                 Button {
                     // save to portfolio
+                    saveToPortfolio()
+                    removeSelectedCoin()
                     
                 } label: {
                     Text("Save".uppercased())
@@ -52,12 +53,15 @@ struct PortfolioView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     CancelButtonView(action: {
-                        homeVM.searchTxt = ""
-                        selectedCoin = nil
-                        amountSelected = ""
+                        removeSelectedCoin()
                     })
                     .offset(x:30)
                 }
+            }
+        }
+        .onChange(of: homeVM.searchTxt) { _, newValue in
+            if newValue==""{
+                removeSelectedCoin()
             }
         }
     }
@@ -77,6 +81,39 @@ extension PortfolioView{
         return coin.currentPrice * (Double(amountSelected) ?? 0)
     }
     
+    private func removeSelectedCoin(){
+        withAnimation {
+            homeVM.searchTxt = ""
+            selectedCoin = nil
+            amountSelected = ""
+        }
+    }
+    
+    private func updateSelectedCoin(coin: Coin) {
+        selectedCoin = coin
+        if let portfolioCoin = homeVM.portfolioCoins.first(where: { $0.id == coin.id }),
+           let amount = portfolioCoin.currentHoldings {
+            amountSelected = "\(amount)"
+        } else {
+            amountSelected = ""
+        }
+    }
+    
+    private func saveToPortfolio() {
+        guard let coin = selectedCoin,
+              let amount = Double(amountSelected),
+              amount >= 0 else { return }
+        
+        homeVM.saveToPortfolio(coin: coin, amount: amount)
+        
+        withAnimation(.easeIn) {
+            removeSelectedCoin()
+        }
+    }
+
+    
+
+    
     
     private var coinsRow:some View{
         ScrollView(
@@ -84,7 +121,9 @@ extension PortfolioView{
             showsIndicators: false,
             content: {
                 LazyHStack(spacing: 10) {
-                    ForEach(homeVM.allCoins) { coin in
+                    ForEach(
+                        homeVM.searchTxt.isEmpty ? homeVM.portfolioCoins : homeVM.allCoins
+                    ) { coin in
                         CoinImageRowView(coin: coin)
                             .frame(width: 65)
                             .padding()
