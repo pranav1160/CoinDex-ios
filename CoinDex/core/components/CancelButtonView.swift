@@ -11,12 +11,13 @@ import SwiftUI
 struct CancelButtonView: View {
     // Used to dismiss the current view
     @Environment(\.dismiss) private var dismiss
-    
+    var action: (() -> Void)? = nil
     var body: some View {
         VStack {
             HStack {
                 Button {
                     dismiss() // Dismisses the current view
+                    action?()      
                 } label: {
                     Image(systemName: "xmark")
                         .foregroundColor(.primary)
@@ -33,5 +34,7 @@ struct CancelButtonView: View {
 }
 
 #Preview {
-    CancelButtonView()
+    CancelButtonView {
+        print("crazy xyx")
+    }
 }

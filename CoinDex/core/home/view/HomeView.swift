@@ -99,7 +99,6 @@ extension HomeView{
                 }
                 .listStyle(.plain)
                 .transition(.move(edge: .trailing))
-                
             }
             
             if !showPortfolio{

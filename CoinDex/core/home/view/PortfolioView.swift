@@ -11,51 +11,52 @@ struct PortfolioView: View {
     @EnvironmentObject var homeVM: HomeViewModel
     @State private var selectedCoin:Coin? = nil
     @State private var amountSelected = ""
-   
     
     var body: some View {
+        
         NavigationStack {
-            
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     SearchBarView(searchText: $homeVM.searchTxt)
                     
                     coinsRow
                     
-                   
                     if let coin = selectedCoin {
                         CoinFormView(
                             coin: coin,
                             amountSelected: $amountSelected
                         )
-                        
-                        
-                        // Wide Save Button
-                        Button {
-                            // save to portfolio
-                        } label: {
-                            Text("Save".uppercased())
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.theme.appRed)
-                                .cornerRadius(12)
-                                .shadow(radius: 5)
-                        }
                     }
                     
-                  
-                    
                 }
-
+                
                 .padding(.vertical, 8)
             }
+            .overlay(  // Wide Save Button
+                Button {
+                    // save to portfolio
+                    
+                } label: {
+                    Text("Save".uppercased())
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.theme.appRed)
+                        .cornerRadius(12)
+                        .shadow(radius: 5)
+                        .padding()
+                    
+                },alignment: .bottom)
             .navigationTitle("Edit Portfolio")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    CancelButtonView()
-                       
+                    CancelButtonView(action: {
+                        homeVM.searchTxt = ""
+                        selectedCoin = nil
+                        amountSelected = ""
+                    })
+                    .offset(x:30)
                 }
             }
         }
@@ -75,7 +76,7 @@ extension PortfolioView{
     private func getAmountValue(for coin: Coin) -> Double {
         return coin.currentPrice * (Double(amountSelected) ?? 0)
     }
-
+    
     
     private var coinsRow:some View{
         ScrollView(
@@ -136,21 +137,13 @@ extension PortfolioView{
                     Text("\(getAmountValue().asCurrencyWith2Decimals())")
                 }
                 
-                
-                
-              
-                
             }
             .padding()
             .font(.headline)
         }
-        
         private func getAmountValue() -> Double {
             return coin.currentPrice * (Double(amountSelected) ?? 0)
         }
-        
-       
     }
-
     
 }
