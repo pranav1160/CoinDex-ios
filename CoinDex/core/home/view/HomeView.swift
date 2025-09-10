@@ -114,6 +114,9 @@ extension HomeView{
                 .transition(.move(edge: .leading))
             }
         }
+        .refreshable {
+            
+        }
     }
     
     private var homeColumns:some View{

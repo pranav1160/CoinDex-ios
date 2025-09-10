@@ -40,6 +40,7 @@ class HomeViewModel:ObservableObject{
             .store(in: &cancellables)
         
         statService.$data
+            .combineLatest($portfolioCoins)
             .map (convertToStatistics)
             .sink { [weak self] stats in
                 self?.statistics = stats
@@ -48,14 +49,7 @@ class HomeViewModel:ObservableObject{
         
         $allCoins
             .combineLatest(portfolioService.$savedPortfolios)
-            .map { allCoins,portfolios->[Coin] in
-                allCoins.compactMap { coin in
-                    guard let entity = portfolios.first(where: {$0.id == coin.id}) else {
-                        return nil
-                    }
-                    return coin.updateHoldings(amount: entity.amount)
-                }
-            }
+            .map (convertToPortfolio)
             .sink {[weak self] coins in
                 self?.portfolioCoins = coins
             }
@@ -63,10 +57,24 @@ class HomeViewModel:ObservableObject{
             
     }
     
-    private func convertToStatistics(marketData:MarketDataModel?)->[Statistic]{
-        var statistics:[Statistic] = []
+    private func convertToPortfolio(allCoins: Published<[Coin]>.Publisher.Output,portfolios:Published<[PortfolioEntity]>.Publisher.Output)->[Coin]{
+        allCoins.compactMap { coin in
+            guard let entity = portfolios.first(where: {$0.id == coin.id}) else {
+                return nil
+            }
+            return coin.updateHoldings(amount: entity.amount)
+        }
+    }
+    
+    private func convertToStatistics(
+        marketData: MarketDataModel?,
+        portfolioCoins: [Coin]
+    ) -> [Statistic] {
         
-        guard let marketData = marketData else {return statistics}
+        var statistics: [Statistic] = []
+        
+        // ✅ 1. Market stats
+        guard let marketData = marketData else { return statistics }
         
         let marketCap = Statistic(
             title: "Market Cap",
@@ -84,15 +92,33 @@ class HomeViewModel:ObservableObject{
             value: marketData.btcDominance
         )
         
-        let portfolio = Statistic(title: "Portfolio", value: "$0.00", percentageChange: 0.00)
+        // ✅ 2. Portfolio stats
+        let currentValue = portfolioCoins
+            .map { $0.currentHoldingsValue }
+            .reduce(0, +)
         
-        statistics
-            .append(
-                contentsOf: [marketCap,volume,btcDominance,portfolio]
-            )
+        let previousValue = portfolioCoins
+            .map { coin -> Double in
+                let current = coin.currentHoldingsValue
+                let percentChange = (coin.priceChangePercentage24H ?? 0) / 100
+                return current / (1 + percentChange)
+            }
+            .reduce(0, +)
+        
+        let percentageChange = (currentValue - previousValue) / previousValue
+        
+        let portfolio = Statistic(
+            title: "Portfolio",
+            value: currentValue.asCurrencyWith2Decimals(),
+            percentageChange: percentageChange
+        )
+        
+        // ✅ 3. Collect them
+        statistics.append(contentsOf: [marketCap, volume, btcDominance, portfolio])
+        
         return statistics
     }
-    
+
     private func filterCoins(searchText:String,allCoins:[Coin])->[Coin]{
         guard !searchText.isEmpty else {
             return allCoins

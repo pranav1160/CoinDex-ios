@@ -32,23 +32,8 @@ struct PortfolioView: View {
                 .padding(.vertical, 8)
             }
             .overlay(  // Wide Save Button
-                Button {
-                    // save to portfolio
-                    saveToPortfolio()
-                    removeSelectedCoin()
-                    
-                } label: {
-                    Text("Save".uppercased())
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.theme.appRed)
-                        .cornerRadius(12)
-                        .shadow(radius: 5)
-                        .padding()
-                    
-                },alignment: .bottom)
+                saveButton
+                ,alignment: .bottom)
             .navigationTitle("Edit Portfolio")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -144,6 +129,27 @@ extension PortfolioView{
                     }
                 }
             })
+    }
+    
+    private var saveButton:some View{
+        VStack{
+            Button {
+                // save to portfolio
+                saveToPortfolio()
+                removeSelectedCoin()
+                
+            } label: {
+                Text("Save".uppercased())
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.theme.appRed)
+                    .cornerRadius(12)
+                    .shadow(radius: 5)
+                    .padding()
+            }
+        }
     }
     
     private struct CoinFormView: View {
