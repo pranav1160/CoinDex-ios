@@ -26,7 +26,6 @@ struct PortfolioView: View {
                             amountSelected: $amountSelected
                         )
                     }
-                    
                 }
                 
                 .padding(.vertical, 8)
@@ -78,11 +77,12 @@ extension PortfolioView{
         selectedCoin = coin
         if let portfolioCoin = homeVM.portfolioCoins.first(where: { $0.id == coin.id }),
            let amount = portfolioCoin.currentHoldings {
-            amountSelected = "\(amount)"
+            amountSelected = amount.asNumberString()
         } else {
             amountSelected = ""
         }
     }
+
     
     private func saveToPortfolio() {
         guard let coin = selectedCoin,
@@ -113,8 +113,7 @@ extension PortfolioView{
                             .frame(width: 65)
                             .padding()
                             .onTapGesture {
-                                selectedCoin = coin
-                                amountSelected = coin.currentHoldings?.description ?? ""
+                                updateSelectedCoin(coin: coin)
                             }
                             .background {
                                 RoundedRectangle(cornerRadius: 10)
@@ -131,13 +130,10 @@ extension PortfolioView{
             })
     }
     
-    private var saveButton:some View{
-        VStack{
+    private var saveButton: some View {
+        VStack {
             Button {
-                // save to portfolio
                 saveToPortfolio()
-                removeSelectedCoin()
-                
             } label: {
                 Text("Save".uppercased())
                     .font(.headline)
@@ -151,6 +147,7 @@ extension PortfolioView{
             }
         }
     }
+
     
     private struct CoinFormView: View {
         let coin: Coin
