@@ -14,7 +14,7 @@ class HomeViewModel: ObservableObject {
     
     @Published var searchTxt: String = ""
     @Published var statistics: [Statistic] = []
-    @Published var sortType: SortOptions = .priceReversed
+    @Published var sortType: SortOptions = .rank
     @Published var portfolioSortType: SortOptions = .holdings // New property for portfolio sorting
     
     private let dataService = CoinDataService()

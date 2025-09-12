@@ -28,13 +28,14 @@ struct HomeView: View {
                 
                 HomeStatsView(showPortfolio: $showPortfolio)
                 
-                SearchBarView(searchText: $homeVm.searchTxt)
+                HStack {
+                    SearchBarView(searchText: $homeVm.searchTxt)
+                    
+                    sortingSection
+                }
                 
                 Spacer(minLength: 0)
-                
-                sortingSection
-                    .padding(.bottom,4)
-                
+  
                 homeColumns
                 
                 coinsList
@@ -88,100 +89,41 @@ extension HomeView {
             .padding(.horizontal)
         }
     }
-    
+ 
     private var sortingSection: some View {
-        VStack(spacing: 8) {
-            HStack {
-                HStack(spacing: 4) {
-                    Image(systemName: "arrow.up.arrow.down")
-                        .foregroundColor(Color.theme.secondaryText)
-                    
-                    Text(currentSortText)
-                        .font(.caption)
-                        .foregroundColor(Color.theme.secondaryText)
-                    
-                    Image(systemName: "chevron.down")
-                        .foregroundColor(Color.theme.secondaryText)
-                        .rotationEffect(showSortOptions ? Angle(degrees: 180) : Angle(degrees: 0))
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.theme.backGround)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.theme.secondaryText.opacity(0.3), lineWidth: 1)
-                        )
-                )
-                .onTapGesture {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        showSortOptions.toggle()
-                    }
-                }
-                
-                Spacer()
-            }
-           
-            
-            // Sort Options Dropdown
-            if showSortOptions {
-                VStack(spacing: 0) {
+        HStack {
+            Menu {
+                Picker("Sort", selection: showPortfolio ? $homeVm.portfolioSortType : $homeVm.sortType) {
                     ForEach(sortOptions, id: \.self) { option in
-                        HStack {
-                            Text(sortOptionText(for: option))
-                                .font(.caption)
-                            Spacer()
-                            if isCurrentSort(option) {
-                                Image(systemName: "checkmark")
-                                    .foregroundColor(Color.theme.accent)
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
-                        .background(Color.theme.backGround)
-                        .onTapGesture {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                if showPortfolio {
-                                    homeVm.portfolioSortType = option
-                                } else {
-                                    homeVm.sortType = option
-                                }
-                                showSortOptions = false
-                            }
-                        }
-                        
-                        if option != sortOptions.last {
-                            Divider()
-                                .background(Color.theme.secondaryText.opacity(0.2))
-                        }
+                        Text(sortOptionText(for: option))
+                            .tag(option)
                     }
                 }
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.theme.backGround)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.theme.secondaryText.opacity(0.3), lineWidth: 1)
-                        )
-                )
-                .padding(.horizontal)
-                .transition(.opacity.combined(with: .scale(scale: 0.95, anchor: .top)))
+            } label: {
+                Image(systemName: "arrow.up.arrow.down.circle")
+                    .font(.title2) // size of the SF Symbol
+                    .foregroundColor(Color.theme.accent)
             }
         }
+       
     }
+
     
     private var coinsList: some View {
         VStack {
             if showPortfolio {
                 List {
                     ForEach(homeVm.portfolioCoins) { coin in
-                        CoinRowView(coin: coin, showPortFolio: true)
-                            .listRowInsets(EdgeInsets())
-                            .padding(.vertical, 10)
+                        NavigationLink {
+                            LazyView { DetailView(coin: coin) }
+                        } label: {
+                            CoinRowView(coin: coin, showPortFolio: true)
+                        }
+                        .listRowInsets(EdgeInsets())
                     }
                 }
                 .listStyle(.plain)
+                .listRowSpacing(4)
                 .transition(.move(edge: .trailing))
                 .refreshable {
                     await refreshCoins()
@@ -191,12 +133,17 @@ extension HomeView {
             if !showPortfolio {
                 List {
                     ForEach(homeVm.allCoins) { coin in
-                        CoinRowView(coin: coin, showPortFolio: false)
-                            .listRowInsets(EdgeInsets())
-                            .padding(.vertical, 10)
+                        NavigationLink {
+                            LazyView { DetailView(coin: coin) }
+                        } label: {
+                            CoinRowView(coin: coin, showPortFolio: false)
+                        }
+                        .listRowInsets(EdgeInsets())
+                        
                     }
                 }
                 .listStyle(.plain)
+                .listRowSpacing(4)
                 .transition(.move(edge: .leading))
                 .refreshable {
                     await refreshCoins()

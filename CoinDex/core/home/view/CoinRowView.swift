@@ -53,9 +53,8 @@ extension CoinRowView{
             
             // Symbol
             Text(coin.symbol.uppercased())
-                .font(.headline)
-                .foregroundColor(Color.theme.accent)
-                .frame(minWidth: 50, alignment: .leading)
+                .font(.subheadline) // was .headline
+
         }
     }
     
@@ -71,6 +70,7 @@ extension CoinRowView{
                     .font(.caption)
                     .foregroundColor(Color.theme.secondaryText)
             }
+            .font(.subheadline)
         }
     }
     
@@ -78,8 +78,9 @@ extension CoinRowView{
         
         VStack(alignment: .trailing, spacing: 2) {
             Text(coin.currentPrice.asCurrencyWith2to6Decimals())
+                .font(.subheadline)
                 .bold()
-                .foregroundColor(Color.theme.accent)
+
             Text(coin.priceChangePercentage24H?.asPercentString() ?? "")
                 .font(.caption)
                 .foregroundColor(
