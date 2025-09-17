@@ -30,7 +30,6 @@ struct DetailView: View {
                     .frame(height: 200)
       
                 VStack(spacing: 20) {
-                   
                     overviewTitle
                     Divider()
                     descriptionSection
