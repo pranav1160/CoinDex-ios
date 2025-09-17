@@ -25,9 +25,12 @@ struct DetailView: View {
     var body: some View {
         ScrollView {
             VStack {
-               
                 
+                SparklineView(prices: vm.coin.sparklineIn7D?.price ?? [])
+                    .frame(height: 200)
+      
                 VStack(spacing: 20) {
+                   
                     overviewTitle
                     Divider()
                     descriptionSection
