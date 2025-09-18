@@ -117,21 +117,33 @@ extension HomeView {
     private var coinsList: some View {
         VStack {
             if showPortfolio {
-                List {
-                    ForEach(homeVm.portfolioCoins) { coin in
-                        NavigationLink {
-                            LazyView { DetailView(coin: coin) }
-                        } label: {
-                            CoinRowView(coin: coin, showPortFolio: true)
+                if homeVm.portfolioCoins.isEmpty {
+                    // Show empty state when no portfolio coins
+                    EmptyPortfolioView {
+                        // Action to add coins - you can customize this
+                        withAnimation {
+                            navigateToPorfolio = true
                         }
-                        .listRowInsets(EdgeInsets())
                     }
-                }
-                .listStyle(.plain)
-                .listRowSpacing(4)
-                .transition(.move(edge: .trailing))
-                .refreshable {
-                    await refreshCoins()
+                    .transition(.opacity.combined(with: .scale))
+                } else {
+                    // Show portfolio coins list
+                    List {
+                        ForEach(homeVm.portfolioCoins) { coin in
+                            NavigationLink {
+                                LazyView { DetailView(coin: coin) }
+                            } label: {
+                                CoinRowView(coin: coin, showPortFolio: true)
+                            }
+                            .listRowInsets(EdgeInsets())
+                        }
+                    }
+                    .listStyle(.plain)
+                    .listRowSpacing(4)
+                    .transition(.move(edge: .trailing))
+                    .refreshable {
+                        await refreshCoins()
+                    }
                 }
             }
             
@@ -156,6 +168,7 @@ extension HomeView {
             }
         }
     }
+
     
     @MainActor
     private func refreshCoins() async {
