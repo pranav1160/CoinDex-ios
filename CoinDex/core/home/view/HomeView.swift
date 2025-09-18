@@ -13,7 +13,7 @@ struct HomeView: View {
     @EnvironmentObject private var homeVm: HomeViewModel
     @State private var navigateToPorfolio = false
     @State private var showSortOptions = false
-    
+    @State private var showSettings = false
     var body: some View {
         ZStack {
             Color.theme.backGround.ignoresSafeArea()
@@ -39,7 +39,10 @@ struct HomeView: View {
                 homeColumns
                 
                 coinsList
-                
+                   
+            }
+            .sheet(isPresented: $showSettings) {
+                SettingsView()
             }
         }
     }
@@ -63,6 +66,8 @@ extension HomeView {
                 .onTapGesture {
                     if showPortfolio {
                         navigateToPorfolio = true
+                    }else{
+                        showSettings = true
                     }
                 }
                 

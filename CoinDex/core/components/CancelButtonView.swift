@@ -16,7 +16,7 @@ struct CancelButtonView: View {
         VStack {
             HStack {
                 Button {
-                    dismiss() // Dismisses the current view
+                    dismiss()
                     action?()      
                 } label: {
                     Image(systemName: "xmark")
