@@ -18,13 +18,14 @@ extension Double {
         let formatter = NumberFormatter()
         formatter.usesGroupingSeparator = true
         formatter.numberStyle = .currency
-        formatter.locale = .current
+        formatter.currencyCode = "USD"   // force USD
+        formatter.currencySymbol = "$"   // ensure $ symbol
         formatter.minimumFractionDigits = 2
         formatter.maximumFractionDigits = 2
         return formatter
     }
     
-    /// Converts a Double into a Currency with 2-6 decimal places
+    /// Converts a Double into a Currency with 2–6 decimal places
     /// ```
     /// Convert 1234.56   to $1,234.56
     /// Convert 12.3456   to $12.3456
@@ -34,12 +35,13 @@ extension Double {
         let formatter = NumberFormatter()
         formatter.usesGroupingSeparator = true
         formatter.numberStyle = .currency
-        formatter.locale = .current
+        formatter.currencyCode = "USD"
+        formatter.currencySymbol = "$"
         formatter.minimumFractionDigits = 2
         formatter.maximumFractionDigits = 6
         return formatter
     }
-    
+
     /// Converts a Double into a Currency as a String with 2 decimal places
     func asCurrencyWith2Decimals() -> String {
         let number = NSNumber(value: self)
